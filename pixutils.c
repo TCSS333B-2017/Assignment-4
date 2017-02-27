@@ -18,6 +18,7 @@ static pixMap* pixMap_init(){
 }	
 
 void pixMap_destroy (pixMap **p){
+	if(!p || !*p) return 0;
 	pixMap *this_p=*p;
 	if(this_p->pixArray_overlay)
 	 free(this_p->pixArray_overlay);

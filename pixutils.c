@@ -18,7 +18,7 @@ static pixMap* pixMap_init(){
 }	
 
 void pixMap_destroy (pixMap **p){
-	if(!p || !*p) return 0;
+	if(!p || !*p) return;
 	pixMap *this_p=*p;
 	if(this_p->pixArray_overlay)
 	 free(this_p->pixArray_overlay);
@@ -124,8 +124,8 @@ plugin *plugin_parse(char *argv[] ,int *iptr){
 
 //define plugin functions
 
-static void rotate(pixMap *p, pixMap *oldPixMap,int i, int j,void *data){
-	//will do in class	
+static void rotate(pixMap *p, pixMap *oldPixMap,int y, int x,void *data){
+	
 }
 
 static void convolution(pixMap *p, pixMap *oldPixMap,int i, int j,void *data){

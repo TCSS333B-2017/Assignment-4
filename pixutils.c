@@ -78,7 +78,6 @@ int pixMap_write_bmp16(pixMap *p,char *filename){
  BMP16map *bmp16=BMP16map_init(p->imageHeight,p->imageWidth,0,5,6,5); //initialize the bmp type
  if(!bmp16) return 1;
  
-
 	//bmp16->pixArray[i][j] is 2-d array for bmp files. It is analogous to the one for our png file pixMaps except that it is 16 bits
 	
  //However pixMap and BMP16_map are "upside down" relative to each other
@@ -100,6 +99,13 @@ plugin *plugin_parse(char *argv[] ,int *iptr){
 	
 	int i=*iptr;
 	if(!strcmp(argv[i]+2,"rotate")){
+  new->function=rotate;
+  new->data=malloc(2 *sizeof(float));
+  float *sc=(float*) new->data;
+  int i=*iptr;
+  float theta=atof(argv[i+1]);
+  sc[0]=sin(degreesToRadians(-theta));
+	 sc[1]=cos(degreesToRadians(-theta));
 		//code goes here
 		*iptr=i+2;
 		return new;	
@@ -124,8 +130,24 @@ plugin *plugin_parse(char *argv[] ,int *iptr){
 
 //define plugin functions
 
-static void rotate(pixMap *p, pixMap *oldPixMap,int y, int x,void *data){
-	
+static void rotate(pixMap *p, pixMap *oldPixMap,int i, int j,void *data){
+ float *sc=(float*) data;
+ const float ox=p->imageWidth/2.0f;
+ const float oy=p->imageHeight/2.0f;
+ const float s=sc[0];
+	const float c=sc[1];
+	const int y=i;
+	const int x=j;
+	float rotx = c*(x-ox) - s * (oy-y) + ox;
+ float roty = -(s*(x-ox) + c * (oy-y) - oy);
+ int rotj=rotx+.5;
+	int roti=roty+.5; 
+	if(roti >=0 && roti < oldPixMap->imageHeight && rotj >=0 && rotj < oldPixMap->imageWidth){
+   memcpy(p->pixArray_overlay[y]+x,oldPixMap->pixArray_overlay[roti]+rotj,sizeof(rgba));			 
+		}
+		else{
+   memset(p->pixArray_overlay[y]+x,0,sizeof(rgba));		
+		}		
 }
 
 static void convolution(pixMap *p, pixMap *oldPixMap,int i, int j,void *data){
